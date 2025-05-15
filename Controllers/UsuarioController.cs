@@ -1,71 +1,64 @@
-using AA2.Models;
 using Microsoft.AspNetCore.Mvc;
+using AA2.Services;
+using AA2.Models;
 
 namespace AA2.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-
     public class UsuarioController : ControllerBase
     {
-        private static List<Usuario> usuarios = new List<Usuario>();
-        [HttpGet]
-        public ActionResult<IEnumerable<Usuario>> Get()
+        private static List<Usuario> _usuarios = new List<Usuario>();
+        private readonly IUsuarioServices _usuarioServices;
+
+        public UsuarioController(IUsuarioServices usuarioServices)
         {
+            _usuarioServices = usuarioServices;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<List<Usuario>>> GetUsuario()
+        {
+            var usuarios = await _usuarioServices.GetAllAsync();
             return Ok(usuarios);
         }
+
         [HttpGet("{id}")]
-        public ActionResult<Usuario> Get(int id)
+        public async Task<ActionResult<Usuario>> GetUsuario(int id)
         {
-            var usuario = usuarios.FirstOrDefault(u => u.Id == id);
+            var usuario = await _usuarioServices.GetByIdAsync(id);
             if (usuario == null)
             {
                 return NotFound();
             }
+                
             return Ok(usuario);
         }
 
         [HttpPost]
-        public ActionResult<Usuario> Post([FromBody] Usuario usuario)
+        public async Task<ActionResult<Usuario>> CreateUsuario( Usuario usuario)
         {
-            if (usuario == null)
-            {
-                return BadRequest();
-            }
-            usuario.Id = usuarios.Count + 1;
-            usuarios.Add(usuario);
-            return CreatedAtAction(nameof(Get), new { id = usuario.Id }, usuario);
+            await _usuarioServices.AddAsync(usuario);
+            return CreatedAtAction(nameof(GetUsuario), new { id = usuario.Id }, usuario);
         }
 
         [HttpPut("{id}")]
-        public ActionResult<Usuario> Put(int id, [FromBody] Usuario usuario)
+        public async Task<IActionResult> Update(int id, [FromBody] Usuario usuario)
         {
-            if (usuario == null || id != usuario.Id)
-            {
+            if (id != usuario.Id)
                 return BadRequest();
-            }
-            var existingUsuario = usuarios.FirstOrDefault(u => u.Id == id);
-            if (existingUsuario == null)
-            {
-                return NotFound();
-            }
-            existingUsuario.Nombre = usuario.Nombre;
-            existingUsuario.Email = usuario.Email;
-            existingUsuario.EstaActivo = usuario.EstaActivo;
+
+            await _usuarioServices.UpdateAsync(usuario);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var usuario = usuarios.FirstOrDefault(u => u.Id == id);
-            if (usuario == null)
-            {
+            var result = await _usuarioServices.DeleteAsync(id);
+            if (!result)
                 return NotFound();
-            }
-            usuarios.Remove(usuario);
             return NoContent();
         }
     }
 }
-    

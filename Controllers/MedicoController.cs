@@ -1,23 +1,32 @@
-using AA2.Models;
 using Microsoft.AspNetCore.Mvc;
+using AA2.Services;
+using AA2.Models;
+
 
 namespace AA2.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-
     public class MedicoController : ControllerBase
     {
-        private static List<Medico> medicos = new List<Medico>();
-        [HttpGet]
-        public ActionResult<IEnumerable<Medico>> Get()
+        private readonly IMedicoServices _medicoServices;
+
+        public MedicoController(IMedicoServices medicoServices)
         {
+            _medicoServices = medicoServices;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<List<Medico>>> GetAll()
+        {
+            var medicos = await _medicoServices.GetAllAsync();
             return Ok(medicos);
         }
+
         [HttpGet("{id}")]
-        public ActionResult<Medico> Get(int id)
+        public async Task<ActionResult<Medico>> GetById(int id)
         {
-            var medico = medicos.FirstOrDefault(u => u.Id == id);
+            var medico = await _medicoServices.GetByIdAsync(id);
             if (medico == null)
             {
                 return NotFound();
@@ -26,48 +35,34 @@ namespace AA2.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Medico> Post([FromBody] Medico medico)
+        public async Task<ActionResult> Add(Medico medico)
         {
-            if (medico == null)
-            {
-                return BadRequest();
-            }
-            medico.Id = medicos.Count + 1;
-            medicos.Add(medico);
-            return CreatedAtAction(nameof(Get), new { id = medico.Id }, medico);
+            await _medicoServices.AddAsync(medico);
+            return CreatedAtAction(nameof(GetById), new { id = medico.Id }, medico);
         }
 
         [HttpPut("{id}")]
-        public ActionResult<Medico> Put(int id, [FromBody] Medico medico)
+        public async Task<ActionResult> Update(int id, Medico medico)
         {
-            if (medico == null || id != medico.Id)
+            if (id != medico.Id)
             {
                 return BadRequest();
             }
-            var existingMedico = medicos.FirstOrDefault(u => u.Id == id);
-            if (existingMedico == null)
-            {
-                return NotFound();
-            }
-            existingMedico.Nombre = medico.Nombre;
-            existingMedico.Especialidad = medico.Especialidad;
-            existingMedico.Email = medico.Email;
-            existingMedico.Telefono = medico.Telefono;
-            existingMedico.Disponible = medico.Disponible;
+            await _medicoServices.UpdateAsync(medico);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            var medico = medicos.FirstOrDefault(u => u.Id == id);
-            if (medico == null)
+            var result = await _medicoServices.DeleteAsync(id);
+            if (!result)
             {
                 return NotFound();
             }
-            medicos.Remove(medico);
             return NoContent();
         }
+
     }
+
 }
-    

@@ -1,6 +1,7 @@
-using AA2.Models;
-using AA2.Services;
 using Microsoft.AspNetCore.Mvc;
+using AA2.Services;
+using AA2.Models;
+
 
 namespace AA2.Controllers
 {
@@ -9,17 +10,24 @@ namespace AA2.Controllers
 
     public class CitaController : ControllerBase
     {
-        private static List<Cita> citas = new List<Cita>();
-        [HttpGet]
-        public ActionResult<IEnumerable<Cita>> Get()
+        private readonly ICitaServices _citaServices;
+
+        public CitaController(ICitaServices citaServices)
         {
+            _citaServices = citaServices;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<List<Cita>>> GetAll()
+        {
+            var citas = await _citaServices.GetAllAsync();
             return Ok(citas);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Cita> Get(int id)
+        public async Task<ActionResult<Cita>> GetById(int id)
         {
-            var cita = citas.FirstOrDefault(u => u.Id == id);
+            var cita = await _citaServices.GetByIdAsync(id);
             if (cita == null)
             {
                 return NotFound();
@@ -28,47 +36,32 @@ namespace AA2.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Cita> Post([FromBody] Cita cita)
+        public async Task<ActionResult> Add(Cita cita)
         {
-            if (cita == null)
-            {
-                return BadRequest();
-            }
-            cita.Id = citas.Count + 1;
-            cita.IdMedico =citas.Count +1;
-            cita.IdUsuario = citas.Count + 1;
-            citas.Add(cita);
-            return CreatedAtAction(nameof(Get), new { id = cita.Id }, cita);
+            await _citaServices.AddAsync(cita);
+            return CreatedAtAction(nameof(GetById), new { id = cita.Id }, cita);
         }
 
         [HttpPut("{id}")]
-        public ActionResult<Cita> Put(int id, [FromBody] Cita cita)
+        public async Task<ActionResult> Update(int id, Cita cita)
         {
-            if (cita == null || id != cita.Id)
+            if (id != cita.Id)
             {
                 return BadRequest();
             }
-            var existingCita = citas.FirstOrDefault(u => u.Id == id);
-            if (existingCita == null)
-            {
-                return NotFound();
-            }
-            existingCita.Motivo = cita.Motivo;
-            existingCita.Confirmada = cita.Confirmada;
+            await _citaServices.UpdateAsync(cita);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            var cita = citas.FirstOrDefault(u => u.Id == id);
-            if (cita == null)
+            var result = await _citaServices.DeleteAsync(id);
+            if (!result)
             {
                 return NotFound();
             }
-            citas.Remove(cita);
             return NoContent();
         }
     }
 }
-    

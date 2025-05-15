@@ -1,78 +1,62 @@
+using System;
+using System.Collections.Generic; 
+using System.Threading.Tasks;
+using AA2.Data;
 using AA2.Models;
+using AA2.Services;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace AA2.Services
 {
-    public class CitaService
+    public class CitaServices : ICitaServices
     {
-        private List<Cita> citas;
-        private readonly JsonPersistenceService _persistenceService;
+        private readonly ICitaRepository _citaRepository;
 
-        public CitaService(JsonPersistenceService persistenceService)
+        public CitaServices(ICitaRepository citaRepository)
         {
-            _persistenceService = persistenceService;
-            citas = _persistenceService.CargarCitas();
+            _citaRepository = citaRepository;
         }
 
-        public void AgregarCita(Cita cita)
+        public async Task<List<Cita>> GetAllAsync()
         {
-            cita.Id = citas.Count > 0 ? citas.Max(c => c.Id) + 1 : 1;
-            citas.Add(cita);
-            GuardarCambios();
+            return await _citaRepository.GetAllAsync();
         }
 
-        public List<Cita> ObtenerCitas()
+        public async Task<Cita?> GetByIdAsync(int id)
         {
-            return citas;
+            return await _citaRepository.GetByIdAsync(id);
         }
 
-        public List<Cita> ObtenerCitasPorUsuario(int usuarioId)
+        public async Task AddAsync(Cita cita)
         {
-            return citas.Where(c => c.IdUsuario == usuarioId).ToList();
+            await _citaRepository.AddAsync(cita);
         }
 
-        public List<Cita> BuscarCitasPorMotivo(string motivo)
+        public async Task UpdateAsync(Cita cita)
         {
-            return citas.Where(c => c.Motivo.Contains(motivo, StringComparison.OrdinalIgnoreCase)).ToList();
+            await _citaRepository.UpdateAsync(cita);
         }
-        
-        public List<Cita> BuscarCitasPorFecha(DateTime fecha)
+
+        public async Task DeleteAsync(int id)
         {
-            return citas.Where(c => c.FechaCita.Date == fecha.Date).ToList();
-        }
-        
-        public void ActualizarCita(Cita cita)
-        {
-            int index = citas.FindIndex(c => c.Id == cita.Id);
-            if (index != -1)
+            var cita = await _citaRepository.GetByIdAsync(id);
+            if (cita == null)
             {
-                citas[index] = cita;
-                GuardarCambios();
+                throw new KeyNotFoundException("Cita no encontrada");
             }
+             await _citaRepository.DeleteAsync(id);
         }
-        
-        public bool EliminarCita(int id)
+
+        public async Task InicializarDatosAsync()
         {
-            var cita = citas.FirstOrDefault(c => c.Id == id);
-            if (cita != null)
-            {
-                citas.Remove(cita);
-                GuardarCambios();
-                return true;
-            }
-            return false;
+            await _citaRepository.InicializarDatosAsync();
         }
-        
-        
-        private void GuardarCambios()
+
+        Task<bool> ICitaServices.DeleteAsync(int id)
         {
-            try
-            {
-                _persistenceService.GuardarCitas(citas);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error al guardar los cambios: {ex.Message}");
-            }
+            throw new NotImplementedException();
         }
     }
+
+
 }

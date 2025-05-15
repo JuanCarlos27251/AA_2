@@ -1,124 +1,61 @@
+using System;
+using System.Collections.Generic; 
+using System.Threading.Tasks;
+using AA2.Data;
 using AA2.Models;
+using AA2.Services;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+
 
 namespace AA2.Services
 {
-    public class MedicoService
+    public class MedicoServices : IMedicoServices
     {
-        private List<Medico> medicos;
-        private readonly JsonPersistenceService _persistenceService;
+        private readonly IMedicoRepository _medicoRepository;
 
-        public MedicoService(JsonPersistenceService persistenceService)
+        public MedicoServices(IMedicoRepository medicoRepository)
         {
-            _persistenceService = persistenceService;
-            medicos = _persistenceService.CargarMedicos();
-            
-            // Si no hay médicos, crear algunos por defecto
-            if (!medicos.Any())
-            {
-                CrearMedicosPredeterminados();
-            }
+            _medicoRepository = medicoRepository;
         }
 
-        private void CrearMedicosPredeterminados()
+        public async Task<List<Medico>> GetAllAsync()
         {
-            var medicosDefault = new List<Medico>
-            {
-                new Medico
-                {
-                    Id = 1,
-                    Nombre = "Dr. García López",
-                    Especialidad = "Medicina General",
-                    Email = "garcia@citasmedicas.com",
-                    Telefono = "600123456",
-                    FechaAlta = DateTime.Now.AddMonths(-6),
-                    Disponible = true
-                },
-                new Medico
-                {
-                    Id = 2,
-                    Nombre = "Dra. Martínez Ruiz",
-                    Especialidad = "Cardiologia",
-                    Email = "martinez@citasmedicas.com",
-                    Telefono = "600789012",
-                    FechaAlta = DateTime.Now.AddMonths(-3),
-                    Disponible = true
-                },
-                new Medico
-                {
-                    Id = 3,
-                    Nombre = "Dr. Fernández Santos",
-                    Especialidad = "Pediatria",
-                    Email = "fernandez@citasmedicas.com",
-                    Telefono = "600345678",
-                    FechaAlta = DateTime.Now.AddMonths(-1),
-                    Disponible = true
-                }
-            };
-            
-            medicos.AddRange(medicosDefault);
-            GuardarCambios();
+            return await _medicoRepository.GetAllAsync();
         }
 
-        public void AgregarMedico(Medico medico)
+        public async Task<Medico?> GetByIdAsync(int id)
         {
-            medico.Id = medicos.Count > 0 ? medicos.Max(m => m.Id) + 1 : 1;
-            medico.FechaAlta = DateTime.Now;
-            medicos.Add(medico);
-            GuardarCambios();
-        }
-        public bool BorrarMedico(int id)
-        {
-            var medico = medicos.FirstOrDefault(m => m.Id == id);
-            if (medico != null)
-            {
-                medicos.Remove(medico);
-                GuardarCambios();
-                return true;
-            }
-            return false;
-        }
-    
-        
-        public List<Medico> ObtenerMedicos()
-        {
-            return medicos;
+            return await _medicoRepository.GetByIdAsync(id);
         }
 
-        public Medico? ObtenerMedicoPorId(int id)
+        public async Task AddAsync(Medico medico)
         {
-            return medicos.FirstOrDefault(m => m.Id == id);
+            await _medicoRepository.AddAsync(medico);
         }
-        
-        public List<Medico> BuscarMedicosPorEspecialidad(string especialidad)
+
+        public async Task UpdateAsync(Medico medico)
         {
-            return medicos.Where(m => m.Especialidad.Contains(especialidad, StringComparison.OrdinalIgnoreCase)).ToList();
+            await _medicoRepository.UpdateAsync(medico);
         }
-        
-        public List<Medico> BuscarMedicosPorNombre(string nombre)
+
+        public async Task DeleteAsync(int id)
         {
-            return medicos.Where(m => m.Nombre.Contains(nombre, StringComparison.OrdinalIgnoreCase)).ToList();
-        }
-        
-        public void ActualizarMedico(Medico medico)
-        {
-            int index = medicos.FindIndex(m => m.Id == medico.Id);
-            if (index != -1)
+            var medico = await _medicoRepository.GetByIdAsync(id);
+            if (medico == null)
             {
-                medicos[index] = medico;
-                GuardarCambios();
+                throw new KeyNotFoundException("Medico no encontrado");
             }
+             await _medicoRepository.DeleteAsync(id);
         }
-        
-        private void GuardarCambios()
+
+        public async Task InicializarDatosAsync()
         {
-            try
-            {
-                _persistenceService.GuardarMedicos(medicos);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error al guardar los cambios: {ex.Message}");
-            }
+            await _medicoRepository.InicializarDatosAsync();
+        }
+
+        Task<bool> IMedicoServices.DeleteAsync(int id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

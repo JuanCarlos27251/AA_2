@@ -1,113 +1,61 @@
+using System;
+using System.Collections.Generic; 
+using System.Threading.Tasks;
+using AA2.Data;
 using AA2.Models;
+using AA2.Services;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+
 
 namespace AA2.Services
-{
-    public class UsuarioService
+{ 
+    public class UsuarioServices : IUsuarioServices
     {
-        private List<Usuario> usuarios;
-        private readonly JsonPersistenceService _persistenceService;
+        private readonly IUsuarioRepository _usuarioRepository;
 
-        public UsuarioService(JsonPersistenceService persistenceService)
+        public UsuarioServices(IUsuarioRepository usuarioRepository)
         {
-            _persistenceService = persistenceService;
-            usuarios = _persistenceService.CargarUsuarios();
-            
-            // Si no hay usuarios, crear algunos por defecto
-            if (!usuarios.Any())
+            _usuarioRepository = usuarioRepository;
+        }
+
+        public async Task<List<Usuario>> GetAllAsync()
+        {
+            return await _usuarioRepository.GetAllAsync();
+        }
+
+        public async Task<Usuario?> GetByIdAsync(int id)
+        {
+            return await _usuarioRepository.GetByIdAsync(id);
+        }
+
+        public async Task AddAsync(Usuario usuario)
+        {
+            await _usuarioRepository.AddAsync(usuario);
+        }
+
+        public async Task UpdateAsync(Usuario usuario)
+        {
+            await _usuarioRepository.UpdateAsync(usuario);
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            var usuario = await _usuarioRepository.GetByIdAsync(id);
+            if (usuario == null)
             {
-                CrearUsuariosPredeterminados();
+                throw new KeyNotFoundException("Usuario no encontrado");
             }
+             await _usuarioRepository.DeleteAsync(id);
         }
 
-        private void CrearUsuariosPredeterminados()
+        public async Task InicializarDatosAsync()
         {
-            var usuariosDefault = new List<Usuario>
-            {
-                new Usuario
-                {
-                    Id = 1,
-                    Nombre = "admin",
-                    Email = "admin@citasmedicas.com",
-                    Contrasena = "admin123",
-                    FechaRegistro = DateTime.Now,
-                    Rol = "Admin",
-                    EstaActivo = true
-                },
-                new Usuario
-                {
-                    Id = 2,
-                    Nombre = "Pepe",
-                    Email = "paciente1@gmail.com",
-                    Contrasena = "123456",
-                    FechaRegistro = DateTime.Now,
-                    Rol = "Paciente",
-                    EstaActivo = true
-                },
-                new Usuario
-                {
-                    Id = 3,
-                    Nombre = "Maria",
-                    Email = "paciente2@gmail.com",
-                    Contrasena = "123456",
-                    FechaRegistro = DateTime.Now,
-                    Rol = "Paciente",
-                    EstaActivo = true
-                }
-            };
-            
-            usuarios.AddRange(usuariosDefault);
-            GuardarCambios();
+            await _usuarioRepository.InicializarDatosAsync();
         }
 
-        public void AgregarUsuario(Usuario usuario)
+        Task<bool> IUsuarioServices.DeleteAsync(int id)
         {
-            usuario.Id = usuarios.Count > 0 ? usuarios.Max(u => u.Id) + 1 : 1;
-            usuario.FechaRegistro = DateTime.Now;
-            usuarios.Add(usuario);
-            GuardarCambios();
-        }
-
-        public List<Usuario> ObtenerUsuarios()
-        {
-            return usuarios;
-        }
-
-        public Usuario? ObtenerUsuarioPorCredenciales(string nombre, string contrasena)
-        {
-            return usuarios.FirstOrDefault(u => u.Nombre == nombre && u.Contrasena == contrasena && u.EstaActivo);
-        }
-        
-        public Usuario? ObtenerUsuarioPorId(int id)
-        {
-            return usuarios.FirstOrDefault(u => u.Id == id);
-        }
-        
-        public List<Usuario> BuscarUsuariosPorNombre(string nombre)
-        {
-            return usuarios.Where(u => u.Nombre.Contains(nombre, StringComparison.OrdinalIgnoreCase)).ToList();
-        }
-        
-        public void ActualizarUsuario(Usuario usuario)
-        {
-            int index = usuarios.FindIndex(u => u.Id == usuario.Id);
-            if (index != -1)
-            {
-                usuarios[index] = usuario;
-                GuardarCambios();
-            }
-        }
-        
-        
-        private void GuardarCambios()
-        {
-            try
-            {
-                _persistenceService.GuardarUsuarios(usuarios);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error al guardar los cambios: {ex.Message}");
-            }
+            throw new NotImplementedException();
         }
     }
 }
