@@ -8,7 +8,7 @@ namespace AA2.Data
         Task<Medico?> GetByIdAsync(int id);
         Task AddAsync(Medico medico);
         Task UpdateAsync(Medico medico);
-        Task DeleteAsync(int id);
+        Task <bool> DeleteAsync(int id);
         Task InicializarDatosAsync();
     }
 }

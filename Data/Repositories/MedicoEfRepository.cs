@@ -87,9 +87,5 @@ namespace AA2.Data
             }
         }
 
-        Task IMedicoRepository.DeleteAsync(int id)
-        {
-            return DeleteAsync(id);
-        }
     }
 }

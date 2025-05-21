@@ -37,24 +37,14 @@ namespace AA2.Services
             await _citaRepository.UpdateAsync(cita);
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
-            var cita = await _citaRepository.GetByIdAsync(id);
-            if (cita == null)
-            {
-                throw new KeyNotFoundException("Cita no encontrada");
-            }
-             await _citaRepository.DeleteAsync(id);
+            return await _citaRepository.DeleteAsync(id);
         }
 
         public async Task InicializarDatosAsync()
         {
             await _citaRepository.InicializarDatosAsync();
-        }
-
-        Task<bool> ICitaServices.DeleteAsync(int id)
-        {
-            throw new NotImplementedException();
         }
     }
 

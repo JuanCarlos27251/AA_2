@@ -38,14 +38,9 @@ namespace AA2.Services
             await _usuarioRepository.UpdateAsync(usuario);
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
-            var usuario = await _usuarioRepository.GetByIdAsync(id);
-            if (usuario == null)
-            {
-                throw new KeyNotFoundException("Usuario no encontrado");
-            }
-             await _usuarioRepository.DeleteAsync(id);
+            return await _usuarioRepository.DeleteAsync(id);
         }
 
         public async Task InicializarDatosAsync()
@@ -53,9 +48,6 @@ namespace AA2.Services
             await _usuarioRepository.InicializarDatosAsync();
         }
 
-        Task<bool> IUsuarioServices.DeleteAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
+  
     }
 }

@@ -97,9 +97,6 @@ namespace AA2.Data
             }
         }
 
-        Task IUsuarioRepository.DeleteAsync(int id)
-        {
-            return DeleteAsync(id);
-        }
+
     }
 }

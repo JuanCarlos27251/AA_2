@@ -23,6 +23,5 @@ namespace AA2.Models
         public string Telefono { get; set; }
         public DateTime FechaAlta { get; set; }
         public bool Disponible { get; set; }
-        public ICollection<Cita> Citas { get; set; }
     }
 }

@@ -8,7 +8,7 @@ namespace AA2.Data
         Task<Cita?> GetByIdAsync(int id);
         Task AddAsync(Cita cita);
         Task UpdateAsync(Cita cita);
-        Task DeleteAsync(int id);
+        Task <bool>DeleteAsync(int id);
         Task InicializarDatosAsync();
     }
 }

@@ -23,7 +23,6 @@ namespace AA2.Models
         public DateTime FechaRegistro { get; set; }
         public string Rol { get; set; } // "Paciente" o "Admin"
         public bool EstaActivo { get; set; } // Indica si el usuario está activo o no;
-         public ICollection<Cita> Citas { get; set; }
     }
 }
 

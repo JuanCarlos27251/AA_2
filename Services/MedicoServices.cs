@@ -38,24 +38,14 @@ namespace AA2.Services
             await _medicoRepository.UpdateAsync(medico);
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
-            var medico = await _medicoRepository.GetByIdAsync(id);
-            if (medico == null)
-            {
-                throw new KeyNotFoundException("Medico no encontrado");
-            }
-             await _medicoRepository.DeleteAsync(id);
+            return await _medicoRepository.DeleteAsync(id);
         }
 
         public async Task InicializarDatosAsync()
         {
             await _medicoRepository.InicializarDatosAsync();
-        }
-
-        Task<bool> IMedicoServices.DeleteAsync(int id)
-        {
-            throw new NotImplementedException();
         }
     }
 }
