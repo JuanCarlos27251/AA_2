@@ -11,28 +11,108 @@ namespace AA2.Data
         {
             _dbcontext = dbcontext;
         }
-
-        public async Task<List<Medico>> GetAllAsync()
+        public async Task<MedicoDtoOut> AddAsync(MedicoDtoIn medicoDto)
         {
-            return await _dbcontext.Medicos.ToListAsync();
-        }
+            var medico = new Medico
+            {
+                Nombre = medicoDto.Nombre,
+                Especialidad = medicoDto.Especialidad,
+                Email = medicoDto.Email,
+                Telefono = medicoDto.Telefono,
+                FechaAlta = DateTime.Now,
+                Disponible = medicoDto.Disponible
+            };
 
-        public async Task<Medico?> GetByIdAsync(int id)
-        {
-            return await _dbcontext.Medicos.FindAsync(id);
-        }
-
-        public async Task AddAsync(Medico medico)
-        {
             await _dbcontext.Medicos.AddAsync(medico);
             await _dbcontext.SaveChangesAsync();
+
+            return new MedicoDtoOut
+            {
+                Nombre = medico.Nombre,
+                Especialidad = medico.Especialidad,
+                Email = medico.Email,
+                Telefono = medico.Telefono,
+                FechaAlta = medico.FechaAlta,
+                Disponible = medico.Disponible
+            };
         }
 
-        public async Task UpdateAsync(Medico medico)
+        public async Task<List<MedicoDtoOut>> GetAllAsync()
         {
+            return await _dbcontext.Medicos
+                .Select(m => new MedicoDtoOut
+                {
+                    Nombre = m.Nombre,
+                    Especialidad = m.Especialidad,
+                    Email = m.Email,
+                    Telefono = m.Telefono,
+                    FechaAlta = m.FechaAlta,
+                    Disponible = m.Disponible
+                })
+                .ToListAsync();
+        }
+
+        public async Task<MedicoDtoOut?> GetByIdAsync(int id)
+        {
+            var medico = await _dbcontext.Medicos.FindAsync(id);
+            
+            if (medico == null)
+                return null;
+
+            return new MedicoDtoOut
+            {
+                Nombre = medico.Nombre,
+                Especialidad = medico.Especialidad,
+                Email = medico.Email,
+                Telefono = medico.Telefono,
+                FechaAlta = medico.FechaAlta,
+                Disponible = medico.Disponible
+            };
+        }
+
+        public async Task UpdateAsync(int id, MedicoDtoIn medicoDto)
+        {
+            var medico = await _dbcontext.Medicos.FindAsync(id);
+            
+            if (medico == null)
+            {
+                throw new KeyNotFoundException($"Médico con ID {id} no encontrado");
+            }
+
+            medico.Nombre = medicoDto.Nombre;
+            medico.Especialidad = medicoDto.Especialidad;
+            medico.Email = medicoDto.Email;
+            medico.Telefono = medicoDto.Telefono;
+            medico.Disponible = medicoDto.Disponible;
+
             _dbcontext.Medicos.Update(medico);
             await _dbcontext.SaveChangesAsync();
         }
+
+        // public async Task<List<Medico>> GetAllAsync()
+        // {
+        //     return await _dbcontext.Medicos.ToListAsync();
+        // }
+
+        // public async Task<Medico?> GetByIdAsync(int id)
+        // {
+        //     return await _dbcontext.Medicos.FindAsync(id);
+        // }
+
+        // public async Task AddAsync(Medico medico)
+        // {
+        //     await _dbcontext.Medicos.AddAsync(medico);
+        //     await _dbcontext.SaveChangesAsync();
+        // }
+
+
+
+
+        // public async Task UpdateAsync(Medico medico)
+        // {
+        //     _dbcontext.Medicos.Update(medico);
+        //     await _dbcontext.SaveChangesAsync();
+        // }
 
         public async Task<bool> DeleteAsync(int id)
         {

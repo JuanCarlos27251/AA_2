@@ -17,25 +17,24 @@ namespace AA2.Services
         {
             _medicoRepository = medicoRepository;
         }
-
-        public async Task<List<Medico>> GetAllAsync()
+                public async Task<List<MedicoDtoOut>> GetAllAsync()
         {
             return await _medicoRepository.GetAllAsync();
         }
 
-        public async Task<Medico?> GetByIdAsync(int id)
+        public async Task<MedicoDtoOut?> GetByIdAsync(int id)
         {
             return await _medicoRepository.GetByIdAsync(id);
         }
 
-        public async Task AddAsync(Medico medico)
+        public async Task<MedicoDtoOut> AddAsync(MedicoDtoIn medicoDto)
         {
-            await _medicoRepository.AddAsync(medico);
+            return await _medicoRepository.AddAsync(medicoDto);
         }
 
-        public async Task UpdateAsync(Medico medico)
+        public async Task UpdateAsync(int id, MedicoDtoIn medicoDto)
         {
-            await _medicoRepository.UpdateAsync(medico);
+            await _medicoRepository.UpdateAsync(id, medicoDto);
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -47,5 +46,35 @@ namespace AA2.Services
         {
             await _medicoRepository.InicializarDatosAsync();
         }
+
+        // public async Task<List<Medico>> GetAllAsync()
+        // {
+        //     return await _medicoRepository.GetAllAsync();
+        // }
+
+        // public async Task<Medico?> GetByIdAsync(int id)
+        // {
+        //     return await _medicoRepository.GetByIdAsync(id);
+        // }
+
+        // public async Task AddAsync(Medico medico)
+        // {
+        //     await _medicoRepository.AddAsync(medico);
+        // }
+
+        // public async Task UpdateAsync(Medico medico)
+        // {
+        //     await _medicoRepository.UpdateAsync(medico);
+        // }
+
+        // public async Task<bool> DeleteAsync(int id)
+        // {
+        //     return await _medicoRepository.DeleteAsync(id);
+        // }
+
+        // public async Task InicializarDatosAsync()
+        // {
+        //     await _medicoRepository.InicializarDatosAsync();
+        // }
     }
 }

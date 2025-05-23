@@ -17,24 +17,24 @@ namespace AA2.Services
             _citaRepository = citaRepository;
         }
 
-        public async Task<List<Cita>> GetAllAsync()
+        public async Task<List<CitaDtoOut>> GetAllAsync()
         {
             return await _citaRepository.GetAllAsync();
         }
 
-        public async Task<Cita?> GetByIdAsync(int id)
+        public async Task<CitaDtoOut?> GetByIdAsync(int id)
         {
             return await _citaRepository.GetByIdAsync(id);
         }
 
-        public async Task AddAsync(Cita cita)
+        public async Task<CitaDtoOut> AddAsync(CitaDtoIn citaDtoIn)
         {
-            await _citaRepository.AddAsync(cita);
+            return await _citaRepository.AddAsync(citaDtoIn);
         }
 
-        public async Task UpdateAsync(Cita cita)
+        public async Task UpdateAsync(int id, CitaDtoIn citaDtoIn)
         {
-            await _citaRepository.UpdateAsync(cita);
+            await _citaRepository.UpdateAsync(id, citaDtoIn);
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -46,6 +46,36 @@ namespace AA2.Services
         {
             await _citaRepository.InicializarDatosAsync();
         }
+
+        // public async Task<List<Cita>> GetAllAsync()
+        // {
+        //     return await _citaRepository.GetAllAsync();
+        // }
+
+        // public async Task<Cita?> GetByIdAsync(int id)
+        // {
+        //     return await _citaRepository.GetByIdAsync(id);
+        // }
+
+        // public async Task AddAsync(CitaDtoIn cita)
+        // {
+        //     await _citaRepository.AddAsync(cita);
+        // }
+
+        // public async Task UpdateAsync(Cita cita)
+        // {
+        //     await _citaRepository.UpdateAsync(cita);
+        // }
+
+        // public async Task<bool> DeleteAsync(int id)
+        // {
+        //     return await _citaRepository.DeleteAsync(id);
+        // }
+
+        // public async Task InicializarDatosAsync()
+        // {
+        //     await _citaRepository.InicializarDatosAsync();
+        // }
     }
 
 

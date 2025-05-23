@@ -12,27 +12,134 @@ namespace AA2.Data
             _dbcontext = dbcontext;
         }
 
-        public async Task<List<Cita>> GetAllAsync()
+        public async Task<List<CitaDtoOut>> GetAllAsync()
         {
-            return await _dbcontext.Citas.ToListAsync();
+            return await _dbcontext.Citas
+                .Select(c => new CitaDtoOut
+                {
+                    Id = c.Id,
+                    NombrePaciente = c.NombrePaciente,
+                    NombreMedico = c.NombreMedico,
+                    FechaCita = c.FechaCita,
+                    Motivo = c.Motivo,
+                    Confirmada = c.Confirmada
+                })
+                .ToListAsync();
         }
 
-        public async Task<Cita?> GetByIdAsync(int id)
+        public async Task<CitaDtoOut?> GetByIdAsync(int id)
         {
-            return await _dbcontext.Citas.FindAsync(id);
-        }
+            var cita = await _dbcontext.Citas.FindAsync(id);
+            
+            if (cita == null)
+                return null;
 
-        public async Task AddAsync(Cita cita)
+            return new CitaDtoOut
+            {
+                Id = cita.Id,
+                NombrePaciente = cita.NombrePaciente,
+                NombreMedico = cita.NombreMedico,
+                FechaCita = cita.FechaCita,
+                Motivo = cita.Motivo,
+                Confirmada = cita.Confirmada
+            };
+        }
+        public async Task<CitaDtoOut> AddAsync(CitaDtoIn citaDtoIn)
         {
+            // Buscar IDs basados en los nombres
+            var usuario = await _dbcontext.Usuarios
+                .FirstOrDefaultAsync(u => u.Nombre == citaDtoIn.NombrePaciente);
+            var medico = await _dbcontext.Medicos
+                .FirstOrDefaultAsync(m => m.Nombre == citaDtoIn.NombreMedico);
+
+            if (usuario == null || medico == null)
+            {
+                throw new KeyNotFoundException("Paciente o médico no encontrado");
+            }
+
+            var cita = new Cita
+            {
+                IdUsuario = usuario.Id,
+                IdMedico = medico.Id,
+                FechaCita = citaDtoIn.FechaCita,
+                Motivo = citaDtoIn.Motivo,
+                Confirmada = false,
+                NombrePaciente = citaDtoIn.NombrePaciente,
+                NombreMedico = citaDtoIn.NombreMedico
+            };
+
             await _dbcontext.Citas.AddAsync(cita);
             await _dbcontext.SaveChangesAsync();
-        }
 
-        public async Task UpdateAsync(Cita cita)
+            return new CitaDtoOut
+            {
+                Id = cita.Id,
+                NombrePaciente = cita.NombrePaciente,
+                NombreMedico = cita.NombreMedico,
+                FechaCita = cita.FechaCita,
+                Motivo = cita.Motivo,
+                Confirmada = cita.Confirmada
+            };
+        }
+        
+        public async Task UpdateAsync(int id, CitaDtoIn citaDtoIn)
         {
+            var cita = await _dbcontext.Citas.FindAsync(id);
+            
+            if (cita == null)
+            {
+                throw new KeyNotFoundException($"Cita con ID {id} no encontrada");
+            }
+
+            // Buscar IDs basados en los nombres
+            var usuario = await _dbcontext.Usuarios
+                .FirstOrDefaultAsync(u => u.Nombre == citaDtoIn.NombrePaciente);
+            var medico = await _dbcontext.Medicos
+                .FirstOrDefaultAsync(m => m.Nombre == citaDtoIn.NombreMedico);
+
+            if (usuario == null || medico == null)
+            {
+                throw new KeyNotFoundException("Paciente o médico no encontrado");
+            }
+
+            // Actualizar los campos de la cita
+            cita.IdUsuario = usuario.Id;
+            cita.IdMedico = medico.Id;
+            cita.FechaCita = citaDtoIn.FechaCita;
+            cita.Motivo = citaDtoIn.Motivo;
+            cita.NombrePaciente = citaDtoIn.NombrePaciente;
+            cita.NombreMedico = citaDtoIn.NombreMedico;
+
+            if (citaDtoIn.Confirmada.HasValue)
+            {
+                cita.Confirmada = citaDtoIn.Confirmada.Value;
+            }
+
             _dbcontext.Citas.Update(cita);
             await _dbcontext.SaveChangesAsync();
         }
+
+        // public async Task<List<Cita>> GetAllAsync()
+        // {
+        //     return await _dbcontext.Citas.ToListAsync();
+        // }
+
+        // public async Task<Cita?> GetByIdAsync(int id)
+        // {
+        //     return await _dbcontext.Citas.FindAsync(id);
+        // }
+
+        // public async Task AddAsync(Cita cita)
+        // {
+        //     await _dbcontext.Citas.AddAsync(cita);
+        //     await _dbcontext.SaveChangesAsync();
+        // }
+
+        // public async Task UpdateAsync(Cita cita)
+        // {
+        //     _dbcontext.Citas.Update(cita);
+        //     await _dbcontext.SaveChangesAsync();
+        // }
 
         public async Task<bool> DeleteAsync(int id)
         {
@@ -40,11 +147,11 @@ namespace AA2.Data
             if (cita == null)
             {
                 return false;
-            }    
-            
-                _dbcontext.Citas.Remove(cita);
-                await _dbcontext.SaveChangesAsync();
-                return true;
+            }
+
+            _dbcontext.Citas.Remove(cita);
+            await _dbcontext.SaveChangesAsync();
+            return true;
         }
 
         public async Task InicializarDatosAsync()
