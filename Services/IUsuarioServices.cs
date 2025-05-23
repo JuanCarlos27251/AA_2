@@ -4,12 +4,14 @@ namespace AA2.Services
 {
     public interface IUsuarioServices
     {
-        Task<List<Usuario>> GetAllAsync();
-        Task<Usuario?> GetByIdAsync(int id);
-        Task AddAsync(Usuario usuario);
-        Task UpdateAsync(Usuario usuario);
+        IEnumerable<UsuarioDtoOut> GetAll();
+        UsuarioDtoOut Get(int id);
+        void Add(UsuarioDtoin usuario);
+        
+        void Update(int id, UsuarioDtoin usuario);
         Task<bool> DeleteAsync(int id);
         Task InicializarDatosAsync();
+        Task<UsuarioDtoOut> GetUserFromCredentialsAsync(LoginDtoIn loginDtoIn);
+        Task<UsuarioDtoOut> AddUserFromCredentialsAsync(UsuarioDtoin usuarioDtoin);
     }
-    
 }

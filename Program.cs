@@ -1,6 +1,7 @@
 using AA2.Data;
 using Microsoft.EntityFrameworkCore;
 using AA2.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +18,8 @@ builder.Services.AddDbContext<AA2DbContext>(options =>
 builder.Services.AddScoped<IUsuarioServices, UsuarioServices>();
 builder.Services.AddScoped<IMedicoServices, MedicoServices>();
 builder.Services.AddScoped<ICitaServices, CitaServices>();
+builder.Services.AddScoped<IAuthServices, AuthServices>();
+builder.Services.AddScoped<IUsuarioRepository, UsuarioEfRepository>();
 
 // Controladores + Swagger
 builder.Services.AddControllers();

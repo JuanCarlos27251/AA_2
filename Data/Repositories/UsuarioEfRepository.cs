@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using AA2.Models;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace AA2.Data
 {
@@ -12,26 +13,134 @@ namespace AA2.Data
             _dbcontext = dbcontext;
         }
 
-        public async Task<List<Usuario>> GetAllAsync()
-        {
-            return await _dbcontext.Usuarios.ToListAsync();
-        }
+      
 
-        public async Task<Usuario?> GetByIdAsync(int id)
-        {
-            return await _dbcontext.Usuarios.FindAsync(id);
-        }
+        // public async Task<Usuario?> GetByIdAsync(int id)
+        // {
+        //     return await _dbcontext.Usuarios.FindAsync(id);
+        // }
 
-        public async Task AddAsync(Usuario usuario)
-        {
-            await _dbcontext.Usuarios.AddAsync(usuario);
-            await _dbcontext.SaveChangesAsync();
-        }
+        // public async Task AddAsync(Usuario usuario)
+        // {
+        //     await _dbcontext.Usuarios.AddAsync(usuario);
+        //     await _dbcontext.SaveChangesAsync();
+        // }
 
-        public async Task UpdateAsync(Usuario usuario)
+        // public async Task UpdateAsync(Usuario usuario)
+        // {
+        //     _dbcontext.Usuarios.Update(usuario);
+        //     await _dbcontext.SaveChangesAsync();
+        // }
+
+        public void Add(UsuarioDtoin usuarioDtoin)
         {
+            var usuario = new Usuario
+            {
+                Nombre = usuarioDtoin.Nombre,
+                Email = usuarioDtoin.Email,
+                Contrasena = usuarioDtoin.Contrasena,
+                FechaRegistro = DateTime.Now,
+                Rol = "Paciente", // Por defecto, los nuevos usuarios son pacientes
+                EstaActivo = true
+            };
+
+            _dbcontext.Usuarios.Add(usuario);
+            _dbcontext.SaveChanges();
+        }
+        public IEnumerable<UsuarioDtoOut> GetAll()
+        {
+            return _dbcontext.Usuarios.Select(u => new UsuarioDtoOut
+            {
+                Id = u.Id,
+                Nombre = u.Nombre,
+                Email = u.Email,
+                FechaRegistro = u.FechaRegistro,
+                Rol = u.Rol // Asigna directamente el valor del enum Roles
+            }).ToList();
+        }
+        
+        public UsuarioDtoOut Get(int id)
+        {
+            var usuario = _dbcontext.Usuarios.FirstOrDefault(u => u.Id == id);
+            
+            if (usuario == null)
+            {
+                throw new KeyNotFoundException($"Usuario con ID {id} no encontrado");
+            }
+
+            return new UsuarioDtoOut 
+            { 
+                Id = usuario.Id, 
+                Nombre = usuario.Nombre, 
+                Email = usuario.Email,
+                FechaRegistro = usuario.FechaRegistro,
+                Rol = usuario.Rol
+            };
+        }
+        
+        public void Update(int id, UsuarioDtoin usuarioDtoin)
+        {
+            var usuario = _dbcontext.Usuarios.FirstOrDefault(u => u.Id == id);
+            
+            if (usuario == null)
+            {
+                throw new KeyNotFoundException($"Usuario con ID {id} no encontrado");
+            }
+
+            // Actualizamos los campos modificables
+            usuario.Nombre = usuarioDtoin.Nombre;
+            usuario.Email = usuarioDtoin.Email;
+            usuario.Contrasena = usuarioDtoin.Contrasena;
+            usuario.EstaActivo = usuarioDtoin.EstaActivo;
+            
             _dbcontext.Usuarios.Update(usuario);
-            await _dbcontext.SaveChangesAsync();
+            _dbcontext.SaveChanges();
+        }
+
+        public UsuarioDtoOut AddUserFromCredentials(UsuarioDtoin usuarioDtoin)
+        {
+            var usuario = new Usuario
+            {
+                Nombre = usuarioDtoin.Nombre,
+                Email = usuarioDtoin.Email,
+                Contrasena = usuarioDtoin.Contrasena,
+                FechaRegistro = DateTime.Now,
+                Rol = "Paciente", // Por defecto
+                EstaActivo = true
+            };
+
+            _dbcontext.Usuarios.Add(usuario);
+            _dbcontext.SaveChanges();
+
+            return new UsuarioDtoOut
+            {
+                Id = usuario.Id,
+                Nombre = usuario.Nombre,
+                Email = usuario.Email,
+                Rol = usuario.Rol,
+                FechaRegistro = usuario.FechaRegistro
+            };
+        }
+
+        public UsuarioDtoOut GetUserFromCredentials(LoginDtoIn loginDtoIn)
+        {
+            // Buscar el usuario en la base de datos
+            var usuario = _dbcontext.Usuarios
+                .FirstOrDefault(u => u.Email == loginDtoIn.Email && u.Contrasena == loginDtoIn.Contrasena);
+
+            if (usuario == null)
+            {
+                throw new KeyNotFoundException("Usuario no encontrado");
+            }
+
+            return new UsuarioDtoOut 
+            { 
+                Id = usuario.Id, 
+                Nombre = usuario.Nombre, 
+                Email = usuario.Email, 
+                FechaRegistro = usuario.FechaRegistro,
+                Rol = usuario.Rol 
+            };
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -97,6 +206,21 @@ namespace AA2.Data
             }
         }
 
+        public UsuarioDtoOut? GetUserByEmail(string email)
+        {
+            var usuario = _dbcontext.Usuarios.FirstOrDefault(u => u.Email == email);
+            
+            if (usuario == null)
+                return null;
 
+            return new UsuarioDtoOut
+            {
+                Id = usuario.Id,
+                Nombre = usuario.Nombre,
+                Email = usuario.Email,
+                Rol = usuario.Rol,
+                FechaRegistro = usuario.FechaRegistro
+            };
+        }
     }
 }

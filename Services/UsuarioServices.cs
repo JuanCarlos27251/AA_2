@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 
 namespace AA2.Services
-{ 
+{
     public class UsuarioServices : IUsuarioServices
     {
         private readonly IUsuarioRepository _usuarioRepository;
@@ -18,31 +18,38 @@ namespace AA2.Services
             _usuarioRepository = usuarioRepository;
         }
 
-        public async Task<List<Usuario>> GetAllAsync()
+        public IEnumerable<UsuarioDtoOut> GetAll()
         {
-            return await _usuarioRepository.GetAllAsync();
+            return _usuarioRepository.GetAll();
         }
-
-        public async Task<Usuario?> GetByIdAsync(int id)
+        public UsuarioDtoOut Get(int id)
         {
-            return await _usuarioRepository.GetByIdAsync(id);
+            return _usuarioRepository.Get(id);
         }
-
-        public async Task AddAsync(Usuario usuario)
+        public void Add(UsuarioDtoin usuario)
         {
-            await _usuarioRepository.AddAsync(usuario);
+            _usuarioRepository.Add(usuario);
         }
-
-        public async Task UpdateAsync(Usuario usuario)
+        
+        public void Update(int id, UsuarioDtoin usuario)
         {
-            await _usuarioRepository.UpdateAsync(usuario);
+            _usuarioRepository.Update(id, usuario);
         }
-
         public async Task<bool> DeleteAsync(int id)
         {
             return await _usuarioRepository.DeleteAsync(id);
         }
 
+
+        public async Task<UsuarioDtoOut> GetUserFromCredentialsAsync(LoginDtoIn loginDtoIn)
+        {
+            return await Task.Run(() => _usuarioRepository.GetUserFromCredentials(loginDtoIn));
+        }
+        public async Task<UsuarioDtoOut> AddUserFromCredentialsAsync(UsuarioDtoin usuarioDtoin)
+        {
+            return await Task.Run(() => _usuarioRepository.AddUserFromCredentials(usuarioDtoin));
+        }
+        
         public async Task InicializarDatosAsync()
         {
             await _usuarioRepository.InicializarDatosAsync();

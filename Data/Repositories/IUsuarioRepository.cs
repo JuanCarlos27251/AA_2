@@ -4,11 +4,20 @@ namespace AA2.Data
 {
     public interface IUsuarioRepository
     {
-        Task<List<Usuario>> GetAllAsync();
-        Task<Usuario?> GetByIdAsync(int id);
-        Task AddAsync(Usuario usuario);
-        Task UpdateAsync(Usuario usuario);
-        Task <bool>DeleteAsync(int id);
+
+        //Task<Usuario?> GetByIdAsync(int id);
+        //Task AddAsync(Usuario usuario);
+        
+        public IEnumerable<UsuarioDtoOut> GetAll();
+
+        public UsuarioDtoOut Get(int id);
+        public void Add(UsuarioDtoin usuario);
+       
+        void Update(int id, UsuarioDtoin usuarioDtoin);
+        Task<bool> DeleteAsync(int id);
         Task InicializarDatosAsync();
+        public UsuarioDtoOut GetUserFromCredentials(LoginDtoIn loginDtoIn);
+        public UsuarioDtoOut AddUserFromCredentials(UsuarioDtoin usuarioDtoin);
+        UsuarioDtoOut? GetUserByEmail(string email);
     }
 }

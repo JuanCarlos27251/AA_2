@@ -17,39 +17,43 @@ namespace AA2.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Usuario>>> GetUsuario()
+        public ActionResult<IEnumerable<UsuarioDtoOut>> GetAll()
         {
-            var usuarios = await _usuarioServices.GetAllAsync();
+            var usuarios = _usuarioServices.GetAll();
             return Ok(usuarios);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Usuario>> GetUsuario(int id)
+        public ActionResult<UsuarioDtoOut> Get(int id)
         {
-            var usuario = await _usuarioServices.GetByIdAsync(id);
+            var usuario = _usuarioServices.Get(id);
             if (usuario == null)
             {
                 return NotFound();
             }
-                
+
             return Ok(usuario);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Usuario>> CreateUsuario( Usuario usuario)
+        public ActionResult<UsuarioDtoOut> Add([FromBody]UsuarioDtoin usuario)
         {
-            await _usuarioServices.AddAsync(usuario);
-            return CreatedAtAction(nameof(GetUsuario), new { id = usuario.Id }, usuario);
+            _usuarioServices.Add(usuario);
+            return StatusCode(201, usuario);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] Usuario usuario)
+        public IActionResult Update(int id, [FromBody] UsuarioDtoin usuario)
         {
-            if (id != usuario.Id)
-                return BadRequest();
-
-            await _usuarioServices.UpdateAsync(usuario);
-            return NoContent();
+            try
+            {
+                _usuarioServices.Update(id, usuario); 
+                return Ok();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
         [HttpDelete("{id}")]
@@ -60,5 +64,44 @@ namespace AA2.Controllers
                 return NotFound();
             return NoContent();
         }
+
+
+        // [HttpGet("{id}")]
+        // public async Task<ActionResult<Usuario>> GetUsuario(int id)
+        // {
+        //     var usuario = await _usuarioServices.GetByIdAsync(id);
+        //     if (usuario == null)
+        //     {
+        //         return NotFound();
+        //     }
+
+        //     return Ok(usuario);
+        // }
+
+        // [HttpPost]
+        // public async Task<ActionResult<Usuario>> CreateUsuario( Usuario usuario)
+        // {
+        //     await _usuarioServices.AddAsync(usuario);
+        //     return CreatedAtAction(nameof(GetUsuario), new { id = usuario.Id }, usuario);
+        // }
+
+        // [HttpPut("{id}")]
+        // public async Task<IActionResult> Update(int id, [FromBody] Usuario usuario)
+        // {
+        //     if (id != usuario.Id)
+        //         return BadRequest();
+
+        //     await _usuarioServices.UpdateAsync(usuario);
+        //     return NoContent();
+        // }
+
+        // [HttpDelete("{id}")]
+        // public async Task<IActionResult> Delete(int id)
+        // {
+        //     var result = await _usuarioServices.DeleteAsync(id);
+        //     if (!result)
+        //         return NotFound();
+        //     return NoContent();
+        // }
     }
 }
