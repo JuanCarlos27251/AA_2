@@ -13,25 +13,6 @@ namespace AA2.Data
             _dbcontext = dbcontext;
         }
 
-      
-
-        // public async Task<Usuario?> GetByIdAsync(int id)
-        // {
-        //     return await _dbcontext.Usuarios.FindAsync(id);
-        // }
-
-        // public async Task AddAsync(Usuario usuario)
-        // {
-        //     await _dbcontext.Usuarios.AddAsync(usuario);
-        //     await _dbcontext.SaveChangesAsync();
-        // }
-
-        // public async Task UpdateAsync(Usuario usuario)
-        // {
-        //     _dbcontext.Usuarios.Update(usuario);
-        //     await _dbcontext.SaveChangesAsync();
-        // }
-
         public void Add(UsuarioDtoin usuarioDtoin)
         {
             var usuario = new Usuario

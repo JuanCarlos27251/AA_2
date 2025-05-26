@@ -5,9 +5,6 @@ namespace AA2.Data
     public interface IUsuarioRepository
     {
 
-        //Task<Usuario?> GetByIdAsync(int id);
-        //Task AddAsync(Usuario usuario);
-        
         public IEnumerable<UsuarioDtoOut> GetAll();
 
         public UsuarioDtoOut Get(int id);

@@ -18,6 +18,8 @@ namespace AA2.Data
                 .Select(c => new CitaDtoOut
                 {
                     Id = c.Id,
+                    IdUsuario = c.IdUsuario,
+                    IdMedico = c.IdMedico,
                     NombrePaciente = c.NombrePaciente,
                     NombreMedico = c.NombreMedico,
                     FechaCita = c.FechaCita,
@@ -37,6 +39,8 @@ namespace AA2.Data
             return new CitaDtoOut
             {
                 Id = cita.Id,
+                IdUsuario = cita.IdUsuario,
+                IdMedico = cita.IdMedico,
                 NombrePaciente = cita.NombrePaciente,
                 NombreMedico = cita.NombreMedico,
                 FechaCita = cita.FechaCita,
@@ -74,6 +78,8 @@ namespace AA2.Data
             return new CitaDtoOut
             {
                 Id = cita.Id,
+                IdUsuario = cita.IdUsuario,
+                IdMedico = cita.IdMedico,
                 NombrePaciente = cita.NombrePaciente,
                 NombreMedico = cita.NombreMedico,
                 FechaCita = cita.FechaCita,
@@ -119,27 +125,6 @@ namespace AA2.Data
             await _dbcontext.SaveChangesAsync();
         }
 
-        // public async Task<List<Cita>> GetAllAsync()
-        // {
-        //     return await _dbcontext.Citas.ToListAsync();
-        // }
-
-        // public async Task<Cita?> GetByIdAsync(int id)
-        // {
-        //     return await _dbcontext.Citas.FindAsync(id);
-        // }
-
-        // public async Task AddAsync(Cita cita)
-        // {
-        //     await _dbcontext.Citas.AddAsync(cita);
-        //     await _dbcontext.SaveChangesAsync();
-        // }
-
-        // public async Task UpdateAsync(Cita cita)
-        // {
-        //     _dbcontext.Citas.Update(cita);
-        //     await _dbcontext.SaveChangesAsync();
-        // }
 
         public async Task<bool> DeleteAsync(int id)
         {

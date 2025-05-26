@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using AA2.Services;
 using AA2.Models;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace AA2.Controllers
@@ -16,7 +17,9 @@ namespace AA2.Controllers
             _medicoServices = medicoServices;
         }
 
-                [HttpGet]
+        // Endpoints públicos
+        [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<List<MedicoDtoOut>>> GetAll()
         {
             var medicos = await _medicoServices.GetAllAsync();
@@ -34,7 +37,9 @@ namespace AA2.Controllers
             return Ok(medico);
         }
 
+        // Endpoints privados (solo admin)
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<MedicoDtoOut>> Add([FromBody] MedicoDtoIn medicoDto)
         {
             try
@@ -49,6 +54,7 @@ namespace AA2.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> Update(int id, [FromBody] MedicoDtoIn medicoDto)
         {
             try
@@ -67,6 +73,7 @@ namespace AA2.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> Delete(int id)
         {
             var result = await _medicoServices.DeleteAsync(id);
@@ -76,53 +83,6 @@ namespace AA2.Controllers
             }
             return NoContent();
         }
-
-        // [HttpGet]
-        // public async Task<ActionResult<List<Medico>>> GetAll()
-        // {
-        //     var medicos = await _medicoServices.GetAllAsync();
-        //     return Ok(medicos);
-        // }
-
-        // [HttpGet("{id}")]
-        // public async Task<ActionResult<Medico>> GetById(int id)
-        // {
-        //     var medico = await _medicoServices.GetByIdAsync(id);
-        //     if (medico == null)
-        //     {
-        //         return NotFound();
-        //     }
-        //     return Ok(medico);
-        // }
-
-        // [HttpPost]
-        // public async Task<ActionResult> Add(Medico medico)
-        // {
-        //     await _medicoServices.AddAsync(medico);
-        //     return CreatedAtAction(nameof(GetById), new { id = medico.Id }, medico);
-        // }
-
-        // [HttpPut("{id}")]
-        // public async Task<ActionResult> Update(int id, Medico medico)
-        // {
-        //     if (id != medico.Id)
-        //     {
-        //         return BadRequest();
-        //     }
-        //     await _medicoServices.UpdateAsync(medico);
-        //     return NoContent();
-        // }
-
-        // [HttpDelete("{id}")]
-        // public async Task<ActionResult> Delete(int id)
-        // {
-        //     var result = await _medicoServices.DeleteAsync(id);
-        //     if (!result)
-        //     {
-        //         return NotFound();
-        //     }
-        //     return NoContent();
-        // }
 
     }
 

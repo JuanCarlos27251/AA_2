@@ -46,36 +46,6 @@ namespace AA2.Services
         {
             await _citaRepository.InicializarDatosAsync();
         }
-
-        // public async Task<List<Cita>> GetAllAsync()
-        // {
-        //     return await _citaRepository.GetAllAsync();
-        // }
-
-        // public async Task<Cita?> GetByIdAsync(int id)
-        // {
-        //     return await _citaRepository.GetByIdAsync(id);
-        // }
-
-        // public async Task AddAsync(CitaDtoIn cita)
-        // {
-        //     await _citaRepository.AddAsync(cita);
-        // }
-
-        // public async Task UpdateAsync(Cita cita)
-        // {
-        //     await _citaRepository.UpdateAsync(cita);
-        // }
-
-        // public async Task<bool> DeleteAsync(int id)
-        // {
-        //     return await _citaRepository.DeleteAsync(id);
-        // }
-
-        // public async Task InicializarDatosAsync()
-        // {
-        //     await _citaRepository.InicializarDatosAsync();
-        // }
     }
 
 

@@ -47,34 +47,5 @@ namespace AA2.Services
             await _medicoRepository.InicializarDatosAsync();
         }
 
-        // public async Task<List<Medico>> GetAllAsync()
-        // {
-        //     return await _medicoRepository.GetAllAsync();
-        // }
-
-        // public async Task<Medico?> GetByIdAsync(int id)
-        // {
-        //     return await _medicoRepository.GetByIdAsync(id);
-        // }
-
-        // public async Task AddAsync(Medico medico)
-        // {
-        //     await _medicoRepository.AddAsync(medico);
-        // }
-
-        // public async Task UpdateAsync(Medico medico)
-        // {
-        //     await _medicoRepository.UpdateAsync(medico);
-        // }
-
-        // public async Task<bool> DeleteAsync(int id)
-        // {
-        //     return await _medicoRepository.DeleteAsync(id);
-        // }
-
-        // public async Task InicializarDatosAsync()
-        // {
-        //     await _medicoRepository.InicializarDatosAsync();
-        // }
     }
 }

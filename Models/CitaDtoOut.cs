@@ -3,6 +3,8 @@ namespace AA2.Models
     public class CitaDtoOut
     {
         public int Id { get; set; }
+        public int IdUsuario { get; set; }
+        public int IdMedico { get; set; }
         public string NombrePaciente { get; set; }
         public string NombreMedico { get; set; }
         public DateTime FechaCita { get; set; }

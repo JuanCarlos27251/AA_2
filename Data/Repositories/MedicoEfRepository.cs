@@ -89,30 +89,6 @@ namespace AA2.Data
             await _dbcontext.SaveChangesAsync();
         }
 
-        // public async Task<List<Medico>> GetAllAsync()
-        // {
-        //     return await _dbcontext.Medicos.ToListAsync();
-        // }
-
-        // public async Task<Medico?> GetByIdAsync(int id)
-        // {
-        //     return await _dbcontext.Medicos.FindAsync(id);
-        // }
-
-        // public async Task AddAsync(Medico medico)
-        // {
-        //     await _dbcontext.Medicos.AddAsync(medico);
-        //     await _dbcontext.SaveChangesAsync();
-        // }
-
-
-
-
-        // public async Task UpdateAsync(Medico medico)
-        // {
-        //     _dbcontext.Medicos.Update(medico);
-        //     await _dbcontext.SaveChangesAsync();
-        // }
 
         public async Task<bool> DeleteAsync(int id)
         {

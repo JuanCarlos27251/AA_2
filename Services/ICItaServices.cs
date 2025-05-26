@@ -11,11 +11,5 @@ namespace AA2.Services
         Task<bool> DeleteAsync(int id);
         Task InicializarDatosAsync();
         
-        // Task<List<Cita>> GetAllAsync();
-        // Task<Cita?> GetByIdAsync(int id);
-        // Task AddAsync(Cita cita);
-        // Task UpdateAsync(Cita cita);
-        // Task<bool> DeleteAsync(int id);
-        // Task InicializarDatosAsync();
     }
 }

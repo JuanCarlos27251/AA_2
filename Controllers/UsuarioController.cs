@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using AA2.Services;
 using AA2.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AA2.Controllers
 {
@@ -36,6 +37,7 @@ namespace AA2.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")] // Solo admin puede crear usuarios
         public ActionResult<UsuarioDtoOut> Add([FromBody]UsuarioDtoin usuario)
         {
             _usuarioServices.Add(usuario);
@@ -43,6 +45,7 @@ namespace AA2.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")] // Solo admin puede actualizar usuarios
         public IActionResult Update(int id, [FromBody] UsuarioDtoin usuario)
         {
             try
@@ -57,6 +60,7 @@ namespace AA2.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")] // Solo admin puede eliminar usuarios
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _usuarioServices.DeleteAsync(id);
@@ -65,43 +69,5 @@ namespace AA2.Controllers
             return NoContent();
         }
 
-
-        // [HttpGet("{id}")]
-        // public async Task<ActionResult<Usuario>> GetUsuario(int id)
-        // {
-        //     var usuario = await _usuarioServices.GetByIdAsync(id);
-        //     if (usuario == null)
-        //     {
-        //         return NotFound();
-        //     }
-
-        //     return Ok(usuario);
-        // }
-
-        // [HttpPost]
-        // public async Task<ActionResult<Usuario>> CreateUsuario( Usuario usuario)
-        // {
-        //     await _usuarioServices.AddAsync(usuario);
-        //     return CreatedAtAction(nameof(GetUsuario), new { id = usuario.Id }, usuario);
-        // }
-
-        // [HttpPut("{id}")]
-        // public async Task<IActionResult> Update(int id, [FromBody] Usuario usuario)
-        // {
-        //     if (id != usuario.Id)
-        //         return BadRequest();
-
-        //     await _usuarioServices.UpdateAsync(usuario);
-        //     return NoContent();
-        // }
-
-        // [HttpDelete("{id}")]
-        // public async Task<IActionResult> Delete(int id)
-        // {
-        //     var result = await _usuarioServices.DeleteAsync(id);
-        //     if (!result)
-        //         return NotFound();
-        //     return NoContent();
-        // }
     }
 }

@@ -17,5 +17,9 @@ namespace AA2.Models
         public string Motivo { get; set; }
 
         public bool? Confirmada { get; set; }
+
+        public int IdUsuario { get; set; }
+        public int IdMedico { get; set; }
+    
     }
 }
