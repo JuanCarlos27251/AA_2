@@ -40,29 +40,48 @@ namespace AA2.Data
             }).ToList();
         }
         
-        public UsuarioDtoOut Get(int id)
-        {
-            var usuario = _dbcontext.Usuarios.FirstOrDefault(u => u.Id == id);
-            
-            if (usuario == null)
-            {
-                throw new KeyNotFoundException($"Usuario con ID {id} no encontrado");
-            }
+        
+        public IQueryable<Usuario> GetQueryable()
+    {
+        return _dbcontext.Usuarios.AsQueryable();
+    }
 
-            return new UsuarioDtoOut 
-            { 
-                Id = usuario.Id, 
-                Nombre = usuario.Nombre, 
-                Email = usuario.Email,
-                FechaRegistro = usuario.FechaRegistro,
-                Rol = usuario.Rol
-            };
-        }
+    public async Task<List<UsuarioDtoOut>> SearchAsync(
+        DateTime? fechaInicio,
+        DateTime? fechaFin,
+        string orderBy,
+        bool ascending)
+    {
+        var query = GetQueryable();
+
+        if (fechaInicio.HasValue)
+            query = query.Where(u => u.FechaRegistro >= fechaInicio.Value);
+
+        if (fechaFin.HasValue)
+            query = query.Where(u => u.FechaRegistro <= fechaFin.Value);
+
+        query = orderBy.ToLower() switch
+        {
+            "fecha" => ascending ? query.OrderBy(u => u.FechaRegistro)
+                               : query.OrderByDescending(u => u.FechaRegistro),
+            "nombre" => ascending ? query.OrderBy(u => u.Nombre)
+                                : query.OrderByDescending(u => u.Nombre),
+            _ => query.OrderBy(u => u.FechaRegistro)
+        };
+
+        return await query.Select(u => new UsuarioDtoOut
+        {
+            Nombre = u.Nombre,
+            Email = u.Email,
+            Rol = u.Rol,
+            FechaRegistro = u.FechaRegistro
+        }).ToListAsync();
+    }
         
         public void Update(int id, UsuarioDtoin usuarioDtoin)
         {
             var usuario = _dbcontext.Usuarios.FirstOrDefault(u => u.Id == id);
-            
+
             if (usuario == null)
             {
                 throw new KeyNotFoundException($"Usuario con ID {id} no encontrado");
@@ -73,7 +92,7 @@ namespace AA2.Data
             usuario.Email = usuarioDtoin.Email;
             usuario.Contrasena = usuarioDtoin.Contrasena;
             usuario.EstaActivo = usuarioDtoin.EstaActivo;
-            
+
             _dbcontext.Usuarios.Update(usuario);
             _dbcontext.SaveChanges();
         }

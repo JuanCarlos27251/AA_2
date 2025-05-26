@@ -6,6 +6,13 @@ namespace AA2.Services
     {
         Task<List<MedicoDtoOut>> GetAllAsync();
         Task<MedicoDtoOut?> GetByIdAsync(int id);
+
+        Task<List<MedicoDtoOut>> SearchAsync(
+            string? nombre,
+            string? especialidad,
+            string orderBy,
+            bool ascending);
+            
         Task<MedicoDtoOut> AddAsync(MedicoDtoIn medicoDto);
         Task UpdateAsync(int id, MedicoDtoIn medicoDto);
         Task<bool> DeleteAsync(int id);

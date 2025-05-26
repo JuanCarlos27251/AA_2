@@ -70,10 +70,55 @@ namespace AA2.Data
             };
         }
 
+
+        public IQueryable<Medico> GetQueryable()
+        {
+            return _dbcontext.Medicos.AsQueryable();
+        }
+
+        public async Task<List<MedicoDtoOut>> SearchAsync(
+            string? nombre,
+            string? especialidad,
+            string orderBy,
+            bool ascending)
+        {
+            var query = GetQueryable();
+
+            // Aplicar filtros
+            if (!string.IsNullOrEmpty(nombre))
+                query = query.Where(m => m.Nombre.Contains(nombre));
+
+            if (!string.IsNullOrEmpty(especialidad))
+                query = query.Where(m => m.Especialidad.Contains(especialidad));
+
+            // Aplicar ordenamiento
+            query = orderBy.ToLower() switch
+            {
+                "nombre" => ascending ? query.OrderBy(m => m.Nombre)
+                                    : query.OrderByDescending(m => m.Nombre),
+                "especialidad" => ascending ? query.OrderBy(m => m.Especialidad)
+                                         : query.OrderByDescending(m => m.Especialidad),
+                "fechaalta" => ascending ? query.OrderBy(m => m.FechaAlta)
+                                       : query.OrderByDescending(m => m.FechaAlta),
+                _ => query.OrderBy(m => m.Id)
+            };
+
+            return await query.Select(m => new MedicoDtoOut
+            {
+                Nombre = m.Nombre,
+                Especialidad = m.Especialidad,
+                Email = m.Email,
+                Telefono = m.Telefono,
+                FechaAlta = m.FechaAlta,
+                Disponible = m.Disponible
+            }).ToListAsync();
+        }
+                
+
         public async Task UpdateAsync(int id, MedicoDtoIn medicoDto)
         {
             var medico = await _dbcontext.Medicos.FindAsync(id);
-            
+
             if (medico == null)
             {
                 throw new KeyNotFoundException($"Médico con ID {id} no encontrado");

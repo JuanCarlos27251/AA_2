@@ -17,7 +17,7 @@ namespace AA2.Controllers
             _citaServices = citaServices;
         }
 
-        // Endpoints públicos
+        
         [HttpGet]
         [AllowAnonymous]
         public async Task<ActionResult<List<CitaDtoOut>>> GetAll()
@@ -37,7 +37,7 @@ namespace AA2.Controllers
             return Ok(citas);
         }
 
-        // Endpoints privados (usuarios autenticados)
+        
         [HttpPost]
         [Authorize]
         public async Task<ActionResult<CitaDtoOut>> Add([FromBody] CitaDtoIn citaDtoIn)
@@ -97,6 +97,42 @@ namespace AA2.Controllers
             }
             return Ok(cita);
         }
+
+        
+        [HttpGet("search")]
+        [Authorize]
+        public async Task<ActionResult<IEnumerable<CitaDtoOut>>> Search(
+            [FromQuery] DateTime? fechaInicio,
+            [FromQuery] DateTime? fechaFin,
+            [FromQuery] string? nombreMedico,
+            [FromQuery] string orderBy = "fecha",
+            [FromQuery] bool ascending = true)
+        {
+            try
+            {
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userId == null)
+                {
+                    return Unauthorized("Usuario no autenticado");
+                }
+
+                var citas = await _citaServices.SearchAsync(
+                    int.Parse(userId),
+                    fechaInicio,
+                    fechaFin,
+                    nombreMedico,
+                    orderBy,
+                    ascending);
+
+                return Ok(citas);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
 
         [HttpDelete("{id}")]
         [Authorize]

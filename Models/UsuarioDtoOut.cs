@@ -1,10 +1,12 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace AA2.Models
 {
     public class UsuarioDtoOut
     {
         [Required]
+        [JsonIgnore]
         public int Id { get; set; }
 
         [Required]

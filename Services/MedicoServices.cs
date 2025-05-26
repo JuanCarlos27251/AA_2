@@ -27,6 +27,27 @@ namespace AA2.Services
             return await _medicoRepository.GetByIdAsync(id);
         }
 
+        public async Task<List<MedicoDtoOut>> SearchAsync(
+            string? nombre,
+            string? especialidad,
+            string orderBy,
+            bool ascending)
+        {
+            if (string.IsNullOrEmpty(orderBy))
+            {
+                throw new ArgumentException("El campo de ordenamiento es obligatorio");
+            }
+
+            if (!new[] { "nombre", "especialidad", "fechaalta" }.Contains(orderBy.ToLower()))
+            {
+                throw new ArgumentException("Campo de ordenamiento no válido");
+            }
+
+            return await _medicoRepository.SearchAsync(nombre, especialidad, orderBy, ascending);
+        }
+
+
+
         public async Task<MedicoDtoOut> AddAsync(MedicoDtoIn medicoDto)
         {
             return await _medicoRepository.AddAsync(medicoDto);

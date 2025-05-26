@@ -3,7 +3,7 @@ using AA2.Models;
 
 namespace AA2.Data
 {
-    public class  CitaEfRepository : ICitaRepository
+    public class CitaEfRepository : ICitaRepository
     {
         private readonly AA2DbContext _dbcontext;
 
@@ -48,6 +48,52 @@ namespace AA2.Data
                 Confirmada = cita.Confirmada
             };
         }
+
+                public IQueryable<Cita> GetQueryable()
+        {
+            return _dbcontext.Citas.AsQueryable();
+        }
+
+        public async Task<List<CitaDtoOut>> SearchAsync(
+            int userId,
+            DateTime? fechaInicio,
+            DateTime? fechaFin,
+            string? nombreMedico,
+            string orderBy,
+            bool ascending)
+        {
+            var query = GetQueryable().Where(c => c.IdUsuario == userId);
+
+            if (fechaInicio.HasValue)
+                query = query.Where(c => c.FechaCita >= fechaInicio.Value);
+
+            if (fechaFin.HasValue)
+                query = query.Where(c => c.FechaCita <= fechaFin.Value);
+
+            if (!string.IsNullOrEmpty(nombreMedico))
+                query = query.Where(c => c.NombreMedico.Contains(nombreMedico));
+
+            query = orderBy.ToLower() switch
+            {
+                "fecha" => ascending ? query.OrderBy(c => c.FechaCita)
+                                   : query.OrderByDescending(c => c.FechaCita),
+                "medico" => ascending ? query.OrderBy(c => c.NombreMedico)
+                                    : query.OrderByDescending(c => c.NombreMedico),
+                _ => query.OrderBy(c => c.FechaCita)
+            };
+
+            return await query.Select(c => new CitaDtoOut
+            {
+                Id = c.Id,
+                IdUsuario = c.IdUsuario,
+                NombrePaciente = c.NombrePaciente,
+                NombreMedico = c.NombreMedico,
+                FechaCita = c.FechaCita,
+                Motivo = c.Motivo,
+                Confirmada = c.Confirmada
+            }).ToListAsync();
+        }
+        
         public async Task<CitaDtoOut> AddAsync(CitaDtoIn citaDtoIn)
         {
             // Buscar IDs basados en los nombres
@@ -206,5 +252,7 @@ namespace AA2.Data
                 await _dbcontext.SaveChangesAsync();
             }
         }
+
+
     }
 }

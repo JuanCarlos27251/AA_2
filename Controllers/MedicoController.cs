@@ -37,6 +37,25 @@ namespace AA2.Controllers
             return Ok(medico);
         }
 
+        [HttpGet("search")]
+        [AllowAnonymous]
+        public async Task<ActionResult<IEnumerable<MedicoDtoOut>>> Search(
+            [FromQuery] string? nombre,
+            [FromQuery] string? especialidad,
+            [FromQuery] string? orderBy = "nombre",
+            [FromQuery] bool ascending = true)
+        {
+            try
+            {
+                var medicos = await _medicoServices.SearchAsync(nombre, especialidad, orderBy, ascending);
+                return Ok(medicos);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         // Endpoints privados (solo admin)
         [HttpPost]
         [Authorize(Roles = "Admin")]

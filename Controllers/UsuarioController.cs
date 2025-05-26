@@ -24,16 +24,28 @@ namespace AA2.Controllers
             return Ok(usuarios);
         }
 
-        [HttpGet("{id}")]
-        public ActionResult<UsuarioDtoOut> Get(int id)
+        [HttpGet("search")]
+        [Authorize(Roles = "Admin")] // Solo admin puede buscar usuarios
+        public async Task<ActionResult<IEnumerable<UsuarioDtoOut>>> Search(
+            [FromQuery] DateTime? fechaInicio,
+            [FromQuery] DateTime? fechaFin,
+            [FromQuery] string orderBy = "fecha",
+            [FromQuery] bool ascending = true)
         {
-            var usuario = _usuarioServices.Get(id);
-            if (usuario == null)
+            try
             {
-                return NotFound();
-            }
+                var usuarios = await _usuarioServices.SearchAsync(
+                    fechaInicio,
+                    fechaFin,
+                    orderBy,
+                    ascending);
 
-            return Ok(usuario);
+                return Ok(usuarios);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost]

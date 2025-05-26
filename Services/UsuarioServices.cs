@@ -22,10 +22,30 @@ namespace AA2.Services
         {
             return _usuarioRepository.GetAll();
         }
-        public UsuarioDtoOut Get(int id)
+
+        public async Task<List<UsuarioDtoOut>> SearchAsync(
+            DateTime? fechaInicio,
+            DateTime? fechaFin,
+            string orderBy,
+            bool ascending)
         {
-            return _usuarioRepository.Get(id);
+            if (string.IsNullOrEmpty(orderBy))
+            {
+                throw new ArgumentException("El campo de ordenamiento es obligatorio");
+            }
+
+            if (!new[] { "fecha", "nombre" }.Contains(orderBy.ToLower()))
+            {
+                throw new ArgumentException("Campo de ordenamiento no válido");
+            }
+
+            return await _usuarioRepository.SearchAsync(
+                fechaInicio,
+                fechaFin,
+                orderBy,
+                ascending);
         }
+
         public void Add(UsuarioDtoin usuario)
         {
             _usuarioRepository.Add(usuario);

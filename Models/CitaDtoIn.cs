@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace AA2.Models
 {
@@ -18,7 +19,10 @@ namespace AA2.Models
 
         public bool? Confirmada { get; set; }
 
+
+        [JsonIgnore]
         public int IdUsuario { get; set; }
+        [JsonIgnore]
         public int IdMedico { get; set; }
     
     }

@@ -27,6 +27,33 @@ namespace AA2.Services
             return await _citaRepository.GetByIdAsync(id);
         }
 
+        public async Task<List<CitaDtoOut>> SearchAsync(
+            int userId,
+            DateTime? fechaInicio,
+            DateTime? fechaFin,
+            string? nombreMedico,
+            string orderBy,
+            bool ascending)
+        {
+            if (string.IsNullOrEmpty(orderBy))
+            {
+                throw new ArgumentException("El campo de ordenamiento es obligatorio");
+            }
+
+            if (!new[] { "fecha", "medico" }.Contains(orderBy.ToLower()))
+            {
+                throw new ArgumentException("Campo de ordenamiento no válido");
+            }
+
+            return await _citaRepository.SearchAsync(
+                userId, 
+                fechaInicio, 
+                fechaFin, 
+                nombreMedico, 
+                orderBy, 
+                ascending);
+        }
+
         public async Task<CitaDtoOut> AddAsync(CitaDtoIn citaDtoIn)
         {
             return await _citaRepository.AddAsync(citaDtoIn);
