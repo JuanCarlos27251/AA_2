@@ -25,7 +25,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-var connectionString = builder.Configuration.GetConnectionString("AA2Db");
+var connectionString = builder.Configuration.GetConnectionString("ServerDB_dockernet");
 
 // Registrar servicios
 builder.Services.AddScoped<IUsuarioRepository, UsuarioEfRepository>();
@@ -84,8 +84,8 @@ builder.Services.AddSwaggerGen(opt =>
 
 var app = builder.Build();
 
-// Middleware
-if (app.Environment.IsDevelopment())
+
+// if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "AA2 API v1"));

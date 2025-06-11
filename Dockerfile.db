@@ -1,0 +1,12 @@
+FROM mcr.microsoft.com/mssql/server:2019-CU14-ubuntu-20.04
+
+# Variables de entorno para SQL Server
+ENV ACCEPT_EULA=Y
+ENV MSSQL_SA_PASSWORD=yourStrong(!)Password
+ENV MSSQL_PID=Express
+
+# Exponer el puerto 1527
+EXPOSE 1527
+
+# Opcional: Copiar scripts de inicialización si los tienes
+# COPY ./Data/init.sql /docker-entrypoint-initdb.d/

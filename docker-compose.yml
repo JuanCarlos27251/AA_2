@@ -1,0 +1,39 @@
+version: '3.8'
+ 
+networks: #useful for connect API to DB by service name in appsettings (for example, "ServerDB": "Server=db;) 
+    backend:       
+
+volumes:
+    sqlserver-data:
+        driver: local
+
+services:
+    db:
+        build:
+            context: .
+            dockerfile: Dockerfile.db
+        ports:
+            - "1527:1433"
+        networks:
+            - backend
+        volumes:
+            - sqlserver-data:/var/opt/mssql
+        environment:
+            - ACCEPT_EULA=Y
+            - MSSQL_SA_PASSWORD=yourStrong(!)Password
+            - MSSQL_PID=Express
+
+    api:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - "7251:8080"
+        networks:
+            - backend
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+            - ConnectionStrings__ServerDB_dockernet=Server=db;Database=AA2Db;User Id=sa;Password=yourStrong(!)Password;TrustServerCertificate=True
+        depends_on:
+            - db
+
