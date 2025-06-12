@@ -9,9 +9,7 @@ volumes:
 
 services:
     db:
-        build:
-            context: .
-            dockerfile: Dockerfile.db
+        image: mcr.microsoft.com/mssql/server:2019-CU14-ubuntu-20.04
         ports:
             - "1527:1433"
         networks:
@@ -36,4 +34,3 @@ services:
             - ConnectionStrings__ServerDB_dockernet=Server=db;Database=AA2Db;User Id=sa;Password=yourStrong(!)Password;TrustServerCertificate=True
         depends_on:
             - db
-

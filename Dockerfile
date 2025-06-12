@@ -12,6 +12,7 @@ RUN dotnet publish "AA2.csproj" -c Release -o /app
 FROM mcr.microsoft.com/dotnet/sdk:8.0
 WORKDIR /app
 COPY --from=build /app ./
+COPY --from=build /src ./src
 
 # Exponer el puerto
 EXPOSE 7251
