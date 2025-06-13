@@ -25,7 +25,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-var connectionString = builder.Configuration.GetConnectionString("ServerDB_dockernet");
+var connectionString = builder.Configuration.GetConnectionString("AA2Db");
 
 // Registrar servicios
 builder.Services.AddScoped<IUsuarioRepository, UsuarioEfRepository>();
